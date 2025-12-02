@@ -1,5 +1,7 @@
 import part_01
+import part_02
 
-pub fn main() -> Result(String, Nil) {
-  part_01.main()
+pub fn main() {
+  let _ = part_01.main()
+  let _ = part_02.main()
 }
