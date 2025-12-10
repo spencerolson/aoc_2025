@@ -8,7 +8,7 @@ import simplifile
 pub fn main() {
   use ids <- result.try(parse_input())
   let sum = sum_invalid_ids(ids)
-  io.println("Sum of invalid IDs: " <> int.to_string(sum))
+  io.println("Part 1: sum of invalid IDs: " <> int.to_string(sum))
   Ok(Nil)
 }
 
