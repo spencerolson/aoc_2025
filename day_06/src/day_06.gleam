@@ -1,5 +1,6 @@
-import gleam/io
+import part_01
 
 pub fn main() -> Nil {
-  io.println("Hello from day_06!")
+  let _ = part_01.main()
+  Nil
 }

@@ -22,14 +22,15 @@ fn line_to_list(line: String) -> List(String) {
 }
 
 fn solve_problem(problem: List(String)) -> Int {
-  let assert [operator, ..nums] = list.reverse(problem)
-  let nums = list.map(nums, fn (n) {
-    let assert Ok(num) = int.parse(n)
-    num
-  })
-  case operator {
-    "+" -> int.sum(nums)
-    "*" -> int.product(nums)
-    o -> panic as { "Unknown operator: " <> o }
+  case parse_problem(problem) {
+    #("+", nums) -> int.sum(nums)
+    #("*", nums) -> int.product(nums)
+    #(o, _) -> panic as { "Unknown operator: " <> o }
   }
+}
+
+fn parse_problem(problem: List(String)) -> #(String, List(Int)) {
+  let assert [operator, ..operands] = list.reverse(problem)
+  let nums = operands |> list.map(int.parse) |> result.values()
+  #(operator, nums)
 }
