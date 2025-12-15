@@ -1,5 +1,5 @@
 import part_01
-// import part_02
+import part_02
 import gleeunit
 
 pub fn main() -> Nil {
@@ -12,8 +12,8 @@ pub fn part_1_test() {
   assert result == Ok(6100348226985)
 }
 
-// pub fn part_2_test() {
-//   let result = part_02.main()
+pub fn part_2_test() {
+  let result = part_02.main()
 
-//   assert result == Ok(3263827)
-// }
+  assert result == Ok(12377473011151)
+}
