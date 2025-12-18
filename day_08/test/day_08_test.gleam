@@ -8,5 +8,5 @@ pub fn main() -> Nil {
 pub fn part_1_test() {
   let result = part_01.main()
 
-  assert result == Ok(40)
+  assert result == Ok(175500)
 }
