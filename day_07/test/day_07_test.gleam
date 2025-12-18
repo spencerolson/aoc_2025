@@ -15,5 +15,5 @@ pub fn part_1_test() {
 pub fn part_2_test() {
   let result = part_02.main()
 
-  assert result == Ok(40)
+  assert result == Ok(20571740188555)
 }

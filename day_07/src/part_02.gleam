@@ -16,7 +16,7 @@ pub fn main() {
 }
 
 fn read_input() {
-  "sample_input.txt"
+  "input.txt"
   |> simplifile.read()
   |> result.replace_error(types.InvalidInput)
 }
@@ -43,35 +43,36 @@ fn kind(char: String) {
 }
 
 fn count_beam_splits(grid: types.Grid, entry: types.Cell) {
-  do_count_beam_splits(grid, [entry], 1)
+  do_count_beam_splits(grid, entry, dict.new()).0
 }
 
-fn do_count_beam_splits(grid: types.Grid, to_visit: List(types.Cell), count: Int) {
-  case to_visit {
-    [] -> count
-    [cell, ..rest_to_visit] -> {
-      let #(dir, new_count) = case cell.kind {
-        types.Splitter -> #(types.Sideways, count + 1)
-        _ -> #(types.Down, count)
+fn do_count_beam_splits(grid: types.Grid, cell: types.Cell, cache: dict.Dict(types.Coord, Int)) {
+  case dict.get(cache, cell.coord) {
+    Ok(cached_count) -> #(cached_count, cache)
+    Error(Nil) -> {
+      case cell.kind {
+        types.Splitter -> count_from_splitter(grid, cell, cache)
+        _ -> count_from_empty_space(grid, cell, cache)
       }
-      do_count_beam_splits(
-        grid,
-        add_cells_to_visit(dir, grid, rest_to_visit, cell),
-        new_count
-      )
     }
   }
 }
 
-fn add_cells_to_visit(direction: types.Direction, grid: types.Grid, to_visit: List(types.Cell), cell: types.Cell) {
-  let neighbors = case direction {
-    types.Down -> [dict.get(grid, types.Coord(cell.coord.x, cell.coord.y + 1))]
-    types.Sideways -> [
-      dict.get(grid, types.Coord(cell.coord.x - 1, cell.coord.y)),
-      dict.get(grid, types.Coord(cell.coord.x + 1, cell.coord.y))
-    ]
-  }
-  |> result.values() // filter out out-of-bounds cells
+fn count_from_splitter(grid: types.Grid, cell: types.Cell, cache: dict.Dict(types.Coord, Int)) {
+  let assert Ok(left_cell) = dict.get(grid, types.Coord(cell.coord.x - 1, cell.coord.y))
+  let assert Ok(right_cell) = dict.get(grid, types.Coord(cell.coord.x + 1, cell.coord.y))
+  let #(left_count, left_cache) = do_count_beam_splits(grid, left_cell, cache)
+  let #(right_count, combined_cache) = do_count_beam_splits(grid, right_cell, left_cache)
+  #(
+    left_count + right_count,
+    dict.insert(combined_cache, cell.coord, left_count + right_count)
+  )
+}
 
-  list.append(neighbors, to_visit)
+fn count_from_empty_space(grid: types.Grid, cell: types.Cell, cache: dict.Dict(types.Coord, Int)) {
+  let down_coord = types.Coord(cell.coord.x, cell.coord.y + 1)
+  case dict.get(grid, down_coord) {
+    Ok(down_cell) -> do_count_beam_splits(grid, down_cell, cache)
+    Error(Nil) -> #(1, cache) // reached the bottom of the grid
+  }
 }
